@@ -47,7 +47,9 @@ public class AuthController(IAuthService auth, IJwtService jwt, AppConfig config
     {
         var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
         var username = User.FindFirst(JwtRegisteredClaimNames.UniqueName)?.Value;
-        return Ok(new { id = int.Parse(sub!), username });
+        if (sub is null || username is null)
+            return Unauthorized(new { error = "Invalid token claims" });
+        return Ok(new { id = int.Parse(sub), username });
     }
 
     private void SetJwtCookie(string token)
