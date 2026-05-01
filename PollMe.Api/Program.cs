@@ -1,4 +1,10 @@
+using Dapper;
+using PollMe.Api.Infrastructure;
+using PollMe.Api.Models;
 using System.Text.Json.Serialization;
+
+SqlMapper.AddTypeHandler(new EnumTypeHandler<PollMode>());
+SqlMapper.AddTypeHandler(new EnumTypeHandler<ResultsVisibility>());
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureHttpJsonOptions(options =>
