@@ -1,24 +1,55 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+
 jobs:
   backend:
+    name: Backend (build + test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - run: dotnet build PollMe.sln
-      - run: dotnet test PollMe.Api.Tests/PollMe.Api.Tests.csproj --no-build
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Build
+        run: dotnet build PollMe.sln --configuration Release
+
+      - name: Test
+        run: dotnet test PollMe.Api.Tests/PollMe.Api.Tests.csproj --no-build --configuration Release --verbosity normal
         env:
           Jwt__Secret: ci-test-secret
+
   frontend:
+    name: Frontend (build + test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: cd pollme-frontend && npm ci
-      - run: cd pollme-frontend && npm run build
-      - run: cd pollme-frontend && npm test -- --ci
+          cache: 'npm'
+          cache-dependency-path: pollme-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd pollme-frontend && npm ci
+
+      - name: Build
+        run: cd pollme-frontend && npm run build
+
+      - name: Test
+        run: cd pollme-frontend && npm test -- --ci
