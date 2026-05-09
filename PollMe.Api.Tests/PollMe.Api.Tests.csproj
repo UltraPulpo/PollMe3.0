@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="FluentAssertions" Version="8.9.0" />

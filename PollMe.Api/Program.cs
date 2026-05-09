@@ -39,6 +39,7 @@ builder.Services.AddScoped<IVoteService, VoteService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = ctx =>
@@ -119,3 +120,5 @@ app.MapControllers();
 app.MapHub<TallyHub>("/hubs/tally");
 
 app.Run();
+
+public partial class Program { }

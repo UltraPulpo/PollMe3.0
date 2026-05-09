@@ -28,10 +28,10 @@ public static class DbSeedHelper
 
     public static async Task<int> InsertVoteAsync(IDbConnection conn, int pollId, params int[] selectedOptionIds)
     {
-        var token = Guid.NewGuid().ToString();
+        var sessionToken = Guid.NewGuid().ToString();
         var voteId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO votes (poll_id, token) VALUES (@PollId, @Token); SELECT last_insert_rowid();",
-            new { PollId = pollId, Token = token });
+            "INSERT INTO votes (poll_id, session_token, created_at) VALUES (@PollId, @SessionToken, @CreatedAt); SELECT last_insert_rowid();",
+            new { PollId = pollId, SessionToken = sessionToken, CreatedAt = DateTime.UtcNow.ToString("o") });
         foreach (var optionId in selectedOptionIds)
         {
             await conn.ExecuteAsync(
