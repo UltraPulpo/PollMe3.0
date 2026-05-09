@@ -1,6 +1,6 @@
 const runtimeExpiry =
-  (globalThis as typeof globalThis & { __POLLME_VOTE_TOKEN_EXPIRY_DAYS__?: string | number })
-    .__POLLME_VOTE_TOKEN_EXPIRY_DAYS__;
+  (globalThis as typeof globalThis & { POLLME_VOTE_TOKEN_EXPIRY_DAYS?: string | number })
+    .POLLME_VOTE_TOKEN_EXPIRY_DAYS;
 const parsedExpiry = Number.parseInt(String(runtimeExpiry ?? ''), 10);
 const VOTE_TOKEN_EXPIRY_DAYS = Number.isFinite(parsedExpiry) && parsedExpiry > 0 ? parsedExpiry : 365;
 

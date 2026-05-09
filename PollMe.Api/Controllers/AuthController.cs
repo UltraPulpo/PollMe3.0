@@ -37,7 +37,7 @@ public class AuthController(IAuthService auth, IJwtService jwt, AppConfig config
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Append(CookieName, "", BuildCookieOptions(DateTimeOffset.UnixEpoch, TimeSpan.Zero));
+        Response.Cookies.Append(CookieName, "", BuildCookieOptions(DateTimeOffset.UnixEpoch, TimeSpan.Zero, Request.IsHttps));
         return Ok();
     }
 
@@ -54,15 +54,16 @@ public class AuthController(IAuthService auth, IJwtService jwt, AppConfig config
 
     private void SetJwtCookie(string token)
     {
-        Response.Cookies.Append(CookieName, token, BuildCookieOptions(DateTimeOffset.UtcNow.AddMinutes(config.Jwt.ExpiryMinutes)));
+        Response.Cookies.Append(CookieName, token, BuildCookieOptions(DateTimeOffset.UtcNow.AddMinutes(config.Jwt.ExpiryMinutes), secure: Request.IsHttps));
     }
 
-    private static CookieOptions BuildCookieOptions(DateTimeOffset? expires = null, TimeSpan? maxAge = null)
+    private static CookieOptions BuildCookieOptions(DateTimeOffset? expires = null, TimeSpan? maxAge = null, bool secure = false)
     {
         return new CookieOptions
         {
             Path = "/",
             HttpOnly = true,
+            Secure = secure,
             SameSite = SameSiteMode.Strict,
             Expires = expires,
             MaxAge = maxAge
