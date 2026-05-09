@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet build PollMe.sln
+      - run: dotnet test PollMe.Api.Tests/PollMe.Api.Tests.csproj --no-build
+        env:
+          Jwt__Secret: ci-test-secret
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd pollme-frontend && npm ci
+      - run: cd pollme-frontend && npm run build
+      - run: cd pollme-frontend && npm test -- --ci
