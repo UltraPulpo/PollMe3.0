@@ -18,6 +18,7 @@ export interface PollVoteDto {
   question: string;
   options: OptionDto[];
   mode: PollMode;
+  visibility: ResultsVisibility;
 }
 
 export interface PollSummaryDto {

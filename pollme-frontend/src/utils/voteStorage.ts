@@ -1,4 +1,8 @@
-const VOTE_TOKEN_EXPIRY_DAYS = 365;
+const runtimeExpiry =
+  (globalThis as typeof globalThis & { __POLLME_VOTE_TOKEN_EXPIRY_DAYS__?: string | number })
+    .__POLLME_VOTE_TOKEN_EXPIRY_DAYS__;
+const parsedExpiry = Number.parseInt(String(runtimeExpiry ?? ''), 10);
+const VOTE_TOKEN_EXPIRY_DAYS = Number.isFinite(parsedExpiry) && parsedExpiry > 0 ? parsedExpiry : 365;
 
 export function markVoted(slug: string): void {
   localStorage.setItem(`voted_${slug}`, JSON.stringify({ ts: Date.now() }));

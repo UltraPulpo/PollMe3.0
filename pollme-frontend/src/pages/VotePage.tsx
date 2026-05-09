@@ -22,6 +22,7 @@ export function VotePage() {
     }, [slug]);
 
     const handleSubmit = async (selectedIds: number[]) => {
+        setError(null);
         setIsSubmitting(true);
         try {
             const response = await voteApi.submitVote(slug!, selectedIds);
@@ -31,24 +32,27 @@ export function VotePage() {
             } else {
                 setSubmitted(true);
             }
+        } catch (err) {
+            const msg = err instanceof Error && err.message ? err.message : 'Failed to submit vote';
+            setError(msg);
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    if (error) return <main><p role="alert">{error}</p></main>;
+    if (!poll) return <main><p>Loading...</p></main>;
 
     if (hasVoted() || submitted) {
         return (
             <main>
                 <article>
                     <p>Thank you for voting!</p>
-                    <Link to={`/results/${slug}`}>View Results</Link>
+                    {poll.visibility === 'Public' && <Link to={`/results/${slug}`}>View Results</Link>}
                 </article>
             </main>
         );
     }
-
-    if (error) return <main><p role="alert">{error}</p></main>;
-    if (!poll) return <main><p>Loading...</p></main>;
 
     return (
         <main>

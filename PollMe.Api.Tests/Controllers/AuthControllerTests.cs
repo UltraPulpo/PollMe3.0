@@ -81,7 +81,7 @@ public class AuthControllerTests
     }
 
     [Fact]
-    public void Logout_ClearsCookieWithZeroMaxAge()
+    public void Logout_ClearsCookieWithMatchingOptions()
     {
         var result = _sut.Logout();
 
@@ -89,5 +89,8 @@ public class AuthControllerTests
         var setCookie = _sut.Response.Headers["Set-Cookie"].ToString();
         setCookie.Should().Contain("jwt=");
         setCookie.ToLowerInvariant().Should().Contain("max-age=0");
+        setCookie.ToLowerInvariant().Should().Contain("path=/");
+        setCookie.ToLowerInvariant().Should().Contain("httponly");
+        setCookie.ToLowerInvariant().Should().Contain("samesite=strict");
     }
 }

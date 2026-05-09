@@ -85,6 +85,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+var logger = app.Logger;
 
 app.Use(async (ctx, next) =>
 {
@@ -109,8 +110,9 @@ app.Use(async (ctx, next) =>
     }
     catch (Exception ex) when (!ctx.Response.HasStarted)
     {
+        logger.LogError(ex, "Unhandled exception while processing request");
         ctx.Response.StatusCode = 500;
-        await ctx.Response.WriteAsJsonAsync(new { error = ex.Message });
+        await ctx.Response.WriteAsJsonAsync(new { error = "Internal server error" });
     }
 });
 

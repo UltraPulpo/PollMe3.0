@@ -10,19 +10,23 @@ public class VoteService(IVoteRepository voteRepo) : IVoteService
     public async Task<TallyDto> SubmitVoteAsync(Poll poll, IEnumerable<int> selectedOptionIds)
     {
         var ids = selectedOptionIds.ToList();
+        var distinctIds = ids.Distinct().ToList();
+
+        if (ids.Count != distinctIds.Count)
+            throw new ValidationException("Duplicate option selections are not allowed");
 
         if (poll.Mode == PollMode.SingleSelect)
         {
-            if (ids.Count != 1)
+            if (distinctIds.Count != 1)
                 throw new ValidationException("Single-select polls require exactly one selection");
         }
         else
         {
-            if (ids.Count == 0)
+            if (distinctIds.Count == 0)
                 throw new ValidationException("At least one option must be selected");
         }
 
-        await voteRepo.CreateAsync(new Vote { PollId = poll.Id, CreatedAt = DateTime.UtcNow }, ids);
+        await voteRepo.CreateAsync(new Vote { PollId = poll.Id, CreatedAt = DateTime.UtcNow }, distinctIds);
 
         return await GetTalliesAsync(poll.Id);
     }

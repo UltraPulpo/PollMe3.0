@@ -57,6 +57,7 @@ public class PollService(
             Slug = poll.Slug,
             Question = poll.Question,
             Mode = poll.Mode,
+            Visibility = poll.Visibility,
             Options = options.Select(o => new OptionDto
             {
                 Id = o.Id,

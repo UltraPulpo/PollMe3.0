@@ -4,6 +4,7 @@ import * as authApi from '../api/authApi';
 
 interface AuthContextValue {
     creator: Creator | null;
+    isLoading: boolean;
     login: (username: string, password: string) => Promise<void>;
     register: (username: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -13,9 +14,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [creator, setCreator] = useState<Creator | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        authApi.me().then(setCreator).catch(() => setCreator(null));
+        authApi.me()
+            .then(setCreator)
+            .catch(() => setCreator(null))
+            .finally(() => setIsLoading(false));
     }, []);
 
     const login = async (username: string, password: string) => {
@@ -34,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ creator, login, register, logout }}>
+        <AuthContext.Provider value={{ creator, isLoading, login, register, logout }}>
             {children}
         </AuthContext.Provider>
     );

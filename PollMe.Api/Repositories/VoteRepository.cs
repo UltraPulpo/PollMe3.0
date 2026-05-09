@@ -41,7 +41,7 @@ public class VoteRepository(IDbConnectionFactory factory) : IVoteRepository
         using var conn = factory.CreateConnection();
         return await conn.QueryAsync<OptionTally>(
             """
-            SELECT o.id AS OptionId, o.text AS Text, COUNT(vs.vote_id) AS Votes
+            SELECT o.id AS OptionId, o.text AS Text, COUNT(v.id) AS Votes
             FROM options o
             LEFT JOIN vote_selections vs ON vs.option_id = o.id
             LEFT JOIN votes v ON vs.vote_id = v.id AND v.poll_id = @PollId

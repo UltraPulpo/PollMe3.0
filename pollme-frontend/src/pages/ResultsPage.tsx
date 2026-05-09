@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ResultsChart } from '../components/ResultsChart';
 import { useSignalR } from '../hooks/useSignalR';
 import * as resultsApi from '../api/resultsApi';
+import { ApiError } from '../api/resultsApi';
 import type { TallyDto } from '../types';
 
 export function ResultsPage() {
@@ -18,10 +19,10 @@ export function ResultsPage() {
                 setPollId(t.pollId);
             })
             .catch(err => {
-                const msg = err instanceof Error ? err.message : 'Failed to load results';
-                if (msg.includes('403') || msg.toLowerCase().includes('forbidden')) {
+                if (err instanceof ApiError && err.status === 403) {
                     setError('Results are not public for this poll');
                 } else {
+                    const msg = err instanceof Error ? err.message : 'Failed to load results';
                     setError(msg);
                 }
             });

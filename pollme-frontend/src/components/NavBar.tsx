@@ -10,7 +10,7 @@ export function NavBar() {
             {creator ? (
                 <>
                     <Link to="/dashboard">Dashboard</Link>
-                    <Link to="/create">Create Poll</Link>
+                    <Link to="/polls/new">Create Poll</Link>
                     <button onClick={logout}>Logout</button>
                 </>
             ) : (

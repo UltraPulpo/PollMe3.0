@@ -9,4 +9,6 @@ public class PollVoteDto
     public OptionDto[] Options { get; init; } = [];
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public PollMode Mode { get; init; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public ResultsVisibility Visibility { get; init; }
 }

@@ -18,6 +18,6 @@ public class SlugService(IPollRepository pollRepo) : ISlugService
                 return candidate;
         }
 
-        throw new Exception("Failed to generate a unique slug after 5 attempts");
+        throw new InvalidOperationException("Failed to generate a unique slug after 5 attempts");
     }
 }

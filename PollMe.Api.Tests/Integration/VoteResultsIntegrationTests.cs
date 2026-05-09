@@ -161,6 +161,29 @@ public class VoteResultsIntegrationTests
     }
 
     [Fact]
+    public async Task SubmitVote_DuplicateSelections_Returns400()
+    {
+        var (factory, client, dbPath) = CreateFactory();
+        try
+        {
+            await AuthHelper.AuthenticateAsync(client);
+            var slug = await CreatePollAndGetSlug(client, mode: PollMode.MultiSelect);
+            var optionIds = await GetOptionIds(client, slug);
+
+            var response = await client.PostAsJsonAsync(
+                $"/api/polls/{slug}/votes",
+                new VoteRequest { SelectedOptionIds = [optionIds[0], optionIds[0]] });
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        finally
+        {
+            factory.Dispose();
+            try { if (File.Exists(dbPath)) File.Delete(dbPath); } catch { }
+        }
+    }
+
+    [Fact]
     public async Task GetResults_PublicPoll_Returns200Unauthenticated()
     {
         var (factory, client, dbPath) = CreateFactory();

@@ -14,6 +14,7 @@ import * as useVoteStatusModule from '../hooks/useVoteStatus';
 
 const mockPoll: PollVoteDto = {
     id: 1, slug: 'test-slug', question: 'Test Question?', mode: 'SingleSelect',
+    visibility: 'Public',
     options: [{ id: 1, text: 'Option A', position: 0 }],
 };
 
@@ -51,7 +52,9 @@ describe('VotePage', () => {
 
         renderVotePage();
 
-        expect(screen.getByText(/thank you for voting/i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(/thank you for voting/i)).toBeInTheDocument();
+        });
         expect(screen.getByRole('link', { name: /view results/i })).toBeInTheDocument();
     });
 
@@ -77,6 +80,38 @@ describe('VotePage', () => {
 
         await waitFor(() => {
             expect(screen.getByText('Results Page')).toBeInTheDocument();
+        });
+    });
+
+    it('afterVoting_creatorOnlyPoll_showsThankYouWithoutResultsLink', async () => {
+        const user = userEvent.setup();
+        (pollsApi.getPollBySlug as jest.Mock).mockResolvedValue({ ...mockPoll, visibility: 'CreatorOnly' });
+        (voteApi.submitVote as jest.Mock).mockResolvedValue({ message: 'Thank you for voting!' });
+
+        renderVotePage();
+
+        await waitFor(() => screen.getByText('Test Question?'));
+        await user.click(screen.getByRole('radio'));
+        await user.click(screen.getByRole('button', { name: /vote/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/thank you for voting/i)).toBeInTheDocument();
+        });
+        expect(screen.queryByRole('link', { name: /view results/i })).not.toBeInTheDocument();
+    });
+
+    it('submitVoteError_showsAlertMessage', async () => {
+        const user = userEvent.setup();
+        (voteApi.submitVote as jest.Mock).mockRejectedValue(new Error('Vote failed'));
+
+        renderVotePage();
+
+        await waitFor(() => screen.getByText('Test Question?'));
+        await user.click(screen.getByRole('radio'));
+        await user.click(screen.getByRole('button', { name: /vote/i }));
+
+        await waitFor(() => {
+            expect(screen.getByRole('alert')).toHaveTextContent('Vote failed');
         });
     });
 });

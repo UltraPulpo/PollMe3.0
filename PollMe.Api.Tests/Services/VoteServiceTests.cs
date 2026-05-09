@@ -58,6 +58,13 @@ public class VoteServiceTests
     }
 
     [Fact]
+    public async Task Submit_DuplicateSelections_ThrowsValidation()
+    {
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            _sut.SubmitVoteAsync(MultiSelectPoll(), [1, 1]));
+    }
+
+    [Fact]
     public async Task Submit_ValidMultiSelect_PersistsAllSelections()
     {
         _voteRepo.GetTalliesAsync(1).Returns(new[]

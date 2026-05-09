@@ -5,6 +5,7 @@ import type { PollVoteDto } from '../types';
 
 const singleSelectPoll: PollVoteDto = {
     id: 1, slug: 'abc', question: 'Q?', mode: 'SingleSelect',
+    visibility: 'Public',
     options: [
         { id: 1, text: 'Option A', position: 0 },
         { id: 2, text: 'Option B', position: 1 },
@@ -13,6 +14,7 @@ const singleSelectPoll: PollVoteDto = {
 
 const multiSelectPoll: PollVoteDto = {
     id: 2, slug: 'def', question: 'Q?', mode: 'MultiSelect',
+    visibility: 'Public',
     options: [
         { id: 10, text: 'Option X', position: 0 },
         { id: 11, text: 'Option Y', position: 1 },
