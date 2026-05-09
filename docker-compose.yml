@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: PollMe.Api/Dockerfile
+    environment:
+      - Jwt__Secret=${JWT_SECRET}
+      - Database__Path=/data/pollme.db
+    volumes:
+      - pollme-data:/data
+    expose:
+      - "8080"
+  frontend:
+    build:
+      context: pollme-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+volumes:
+  pollme-data:
